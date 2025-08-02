@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PointlessAndWet</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(to bottom, #87CEFA, #1E90FF);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 4rem;
+      text-shadow: 3px 3px #005f9e;
+      animation: floatText 3s ease-in-out infinite;
+      margin-bottom: 40px;
+    }
+
+    @keyframes floatText {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .droplet-container {
+      display: flex;
+      gap: 60px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .droplet {
+      width: 80px;
+      height: 80px;
+      background: #ffa6c9;
+      border-radius: 50% 50% 60% 60%;
+      position: relative;
+      cursor: pointer;
+      animation: bounce 2s infinite;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .droplet::after {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 20%;
+      width: 15px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .droplet:hover {
+      transform: scale(1.2);
+    }
+
+    .caption {
+      margin-top: 30px;
+      font-size: 1.3rem;
+      color: #fff;
+      opacity: 0.85;
+      text-align: center;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>PointlessAndWet</h1>
+
+  <div class="droplet-container">
+    <div class="droplet" data-link="bubble.html"></div>
+    <div class="droplet" data-link="fluid_simulator.html"></div>
+    <div class="droplet" data-link="mouse.html"></div>
+  </div>
+
+  <div class="caption">Click the droplet... if you dare...</div>
+
+  <canvas id="explode-canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('explode-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function createExplosion(x, y, color = 'pink') {
+      const count = 30;
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x,
+          y,
+          radius: Math.random() * 5 + 2,
+          color,
+          angle: Math.random() * 2 * Math.PI,
+          speed: Math.random() * 6 + 2,
+          alpha: 1,
+          decay: 0.02
+        });
+      }
+    }
+
+    function updateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles = particles.filter(p => p.alpha > 0);
+      particles.forEach(p => {
+        p.x += Math.cos(p.angle) * p.speed;
+        p.y += Math.sin(p.angle) * p.speed;
+        p.alpha -= p.decay;
+
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(updateParticles);
+    }
+    updateParticles();
+
+    document.querySelectorAll('.droplet').forEach(droplet => {
+      droplet.addEventListener('click', (e) => {
+        const rect = droplet.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        createExplosion(x, y, 'pink');
+        droplet.style.visibility = 'hidden';
+        setTimeout(() => {
+          const link = droplet.dataset.link;
+          if (link) {
+            window.open(link, '_blank');
+          }
+        }, 600);
+      });
+    });
+  </script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fake Fluid Swirl</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let particles = [];
+
+  const colors = ['#ff00aa', '#00ffaa', '#00aaff', '#aa00ff', '#ffcc00'];
+
+  class Particle {
+    constructor(x, y, vx, vy, color) {
+      this.x = x;
+      this.y = y;
+      this.vx = vx;
+      this.vy = vy;
+      this.radius = 2 + Math.random() * 3;
+      this.life = 100;
+      this.color = color;
+    }
+
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vx *= 0.96;
+      this.vy *= 0.96;
+      this.life -= 1;
+    }
+
+    draw(ctx) {
+      ctx.beginPath();
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.life / 100;
+      ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    isAlive() {
+      return this.life > 0;
+    }
+  }
+
+  function spawnParticles(x, y) {
+    for (let i = 0; i < 30; i++) {
+      const angle = Math.random() * 2 * Math.PI;
+      const speed = Math.random() * 5;
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particles.push(new Particle(x, y, vx, vy, color));
+    }
+  }
+
+  function animate() {
+    // Fade the canvas slightly to create trails
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles = particles.filter(p => p.isAlive());
+    particles.forEach(p => {
+      p.update();
+      p.draw(ctx);
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    spawnParticles(e.clientX, e.clientY);
+  });
+
+  canvas.addEventListener('touchmove', e => {
+    for (let touch of e.touches) {
+      spawnParticles(touch.clientX, touch.clientY);
+    }
+  }, { passive: true });
+
+  animate();
+</script>
+</body>
+</html>
