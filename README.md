@@ -52,16 +52,14 @@ This website is a multi-page front-end project featuring interactive, intentiona
 
 [Languages used]NIL
 [Frameworks used]HTML5,CSS3, Vanilla Javascript
-### Implementation
-For Software:
+
 # Installation
 ```
 git clone https://github.com/aryachndrn/Useless_project1.git
 cd Useless_project1
 ```
 
-Project Documentation
-For Software:
+
 
 Screenshots (Add at least 3)
 ![Screenshot1](https://raw.githubusercontent.com/aryachndrn/Useless_project1/refs/heads/main/Screenshot%202025-08-02%20063728.png) This is our homepage wherein you get a new brainrot everytime you click the droplet
