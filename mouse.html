@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Repelling Button</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at center, #a0d8ef, #6495ed);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    #repel-btn {
+      position: absolute;
+      padding: 20px 50px;
+      font-size: 20px;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.2s;
+      user-select: none;
+    }
+
+    #repel-btn:hover {
+      background-color: #ff1493;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(0px, 0px); }
+      25% { transform: translate(3px, -3px); }
+      50% { transform: translate(-3px, 3px); }
+      75% { transform: translate(3px, 3px); }
+      100% { transform: translate(0px, 0px); }
+    }
+  </style>
+</head>
+<body>
+
+  <button id="repel-btn">Catch Me!</button>
+
+  <script>
+    const button = document.getElementById("repel-btn");
+    const repelRadius = 120;
+
+    function setPosition(x, y) {
+      button.style.left = `${x}px`;
+      button.style.top = `${y}px`;
+    }
+
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
+    function repel(mouseX, mouseY) {
+      const rect = button.getBoundingClientRect();
+      const btnCenterX = rect.left + rect.width / 2;
+      const btnCenterY = rect.top + rect.height / 2;
+      const dx = btnCenterX - mouseX;
+      const dy = btnCenterY - mouseY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < repelRadius) {
+        const angle = Math.atan2(dy, dx);
+        const moveX = Math.cos(angle) * (repelRadius - distance);
+        const moveY = Math.sin(angle) * (repelRadius - distance);
+
+        let newX = rect.left + moveX;
+        let newY = rect.top + moveY;
+
+        // Constrain within window
+        newX = clamp(newX, 0, window.innerWidth - rect.width);
+        newY = clamp(newY, 0, window.innerHeight - rect.height);
+
+        setPosition(newX, newY);
+
+        // If cornered, shake
+        if (newX <= 0 || newY <= 0 || newX >= window.innerWidth - rect.width || newY >= window.innerHeight - rect.height) {
+          button.style.animation = "shake 0.4s";
+          setTimeout(() => button.style.animation = "", 400);
+        }
+      }
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      repel(e.clientX, e.clientY);
+    });
+
+    // Center the button on load
+    window.addEventListener("load", () => {
+      const startX = (window.innerWidth - button.offsetWidth) / 2;
+      const startY = (window.innerHeight - button.offsetHeight) / 2;
+      setPosition(startX, startY);
+    });
+
+    // Bonus: Change text on hover
+    button.addEventListener("mouseenter", () => {
+      button.textContent = "Too slow 😜";
+    });
+
+    button.addEventListener("mouseleave", () => {
+      button.textContent = "Catch Me!";
+    });
+  </script>
+
+</body>
+</html>
+
