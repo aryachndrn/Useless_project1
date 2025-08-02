@@ -52,6 +52,13 @@ This website is a multi-page front-end project featuring interactive, intentiona
 
 [Languages used]NIL
 [Frameworks used]HTML5,CSS3, Vanilla Javascript
+### Implementation
+For Software:
+# Installation
+```
+git clone https://github.com/aryachndrn/Useless_project1.git
+cd Useless_project1
+```
 
 Project Documentation
 For Software:
